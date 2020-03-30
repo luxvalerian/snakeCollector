@@ -1,5 +1,9 @@
-from django.shortcuts import render
-from .models import Snake
+from django.shortcuts import render, redirect
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+from .models import Snake, Feeding
+
+
 
 # Create your views here.
 def home(request):
@@ -14,4 +18,16 @@ def snakes_index(request):
 
 def snakes_detail(request, snake_id):
     snake = Snake.objects.get(id=snake_id)
-    return render(request, 'snakes/detail.html', { 'snakes': snakes })
+    return render(request, 'snakes/detail.html', { 'snake': snake })
+    
+class SnakeUpdate(UpdateView):
+    model = Snake
+    fields = ['breed', 'description', 'age']
+
+class SnakeDelete(DeleteView):
+    model = Snake
+    success_url = '/snakes/'
+
+class SnakeCreate(CreateView):
+    model = Snake
+    fields = '__all__'
