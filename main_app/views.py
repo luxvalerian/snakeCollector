@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .models import Snake, Feeding
+from .models import Snake
+from .forms import FeedingForm
 
 
 
@@ -18,7 +19,20 @@ def snakes_index(request):
 
 def snakes_detail(request, snake_id):
     snake = Snake.objects.get(id=snake_id)
-    return render(request, 'snakes/detail.html', { 'snake': snake })
+    feeding_form = FeedingForm()
+    return render(request, 'snakes/detail.html', { 
+        'snake': snake,
+        'feeding_form': feeding_form 
+        
+        })
+
+def add_feeding(request, snake_id):
+  form = FeedingForm(request.POST)
+  if form.is_valid():
+    new_feeding = form.save(commit=False)
+    new_feeding.snake_id = snake_id
+    new_feeding.save()
+  return redirect('detail', snake_id=snake_id)
     
 class SnakeUpdate(UpdateView):
     model = Snake
