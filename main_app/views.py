@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView
 
-from .models import Snake
+from .models import Snake, Toy
 from .forms import FeedingForm
 
 
@@ -19,10 +20,13 @@ def snakes_index(request):
 
 def snakes_detail(request, snake_id):
     snake = Snake.objects.get(id=snake_id)
+    toys_snake_doesnt_have = Toys.objects.exclude(id__in = snake.toys.all().values_list('id'))
     feeding_form = FeedingForm()
+
     return render(request, 'snakes/detail.html', { 
         'snake': snake,
-        'feeding_form': feeding_form 
+        'feeding_form': feeding_form,
+        'toys': toys_snake_doesnt_have 
         
         })
 
@@ -33,7 +37,15 @@ def add_feeding(request, snake_id):
     new_feeding.snake_id = snake_id
     new_feeding.save()
   return redirect('detail', snake_id=snake_id)
+
+def assoc_toy(request, snake_id, toy_id):
+    Snake.objects.get(id=snake_id).toys.add(toy_id)
+    return redirect('detail', snake_id=snake_id)
     
+class SnakeCreate(CreateView):
+    model = Snake
+    fields = '__all__'
+
 class SnakeUpdate(UpdateView):
     model = Snake
     fields = ['breed', 'description', 'age']
@@ -42,6 +54,22 @@ class SnakeDelete(DeleteView):
     model = Snake
     success_url = '/snakes/'
 
-class SnakeCreate(CreateView):
-    model = Snake
-    fields = '__all__'
+class ToyList(ListView):
+    model = Toy
+
+class ToyDetail(DetailView):
+    model = Toy
+
+class ToyCreate(CreateView):
+    model = Toy
+    fields = ['name', 'color']
+    success_url = '/toys/'
+
+class ToyUpdate(UpdateView):
+    model = Toy
+    fields = ['name', 'color']
+    success_url = '/toys/'
+
+class ToyDelete(DeleteView):
+    model = Toy
+    success_url = '/toys/'

@@ -5,19 +5,24 @@ from datetime import date
 MEALS = (
     ('B', 'Breakfast'),
     ('K', 'Second Breakfast'),
-    ('E', 'Elevenses'),
-    ('L', 'Luncheon'),
-    ('A', 'Afternoon Tea'),
-    ('D', 'Dinner'),
-    ('S', 'Supper')
+    ('L', 'Lunch'),
+    ('D', 'Dinner')
 )
 
 # Create your models here.
+class Toy(models.Model):
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"A {self.color} {self.name}"
+
 class Snake(models.Model):
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     age = models.IntegerField()
+    toys = models.ManyToManyField(Toy)
 
     def __str__(self):
         return self.name
